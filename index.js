@@ -1,4 +1,4 @@
-const GameBoard = () => {
+const gameBoard = (() => {
     let board = [
         "x","o","x",
         "o","x","o",
@@ -6,17 +6,23 @@ const GameBoard = () => {
     ];
 
     const getBoard = () => board;
-
     return {getBoard};
-};
+})();
 
-const DisplayController = () => {
-    const gameBoardCell = document.querySelectorAll("[data-game-board-cell]");
-    const {getBoard} = GameBoard();
-
-    for (let i = 0; i < getBoard().length; i++) {
-        gameBoardCell[i].textContent = getBoard()[i];
-    }
+const Player = (sign) => {
+    const playerSign = sign;
 }
 
-DisplayController();
+const displayController = (() => {
+    const gameBoardCell = document.querySelectorAll("[data-game-board-cell]");
+    const {getBoard} = gameBoard;
+
+    const renderToPage = () => {
+        for (let i = 0; i < getBoard().length; i++) {
+            gameBoardCell[i].textContent = getBoard()[i];
+            gameBoardCell[i].setAttribute("data-cell-index", getBoard().indexOf(getBoard()[i], i));
+        }
+    }
+
+    renderToPage();
+})();
