@@ -8,7 +8,9 @@ const gameBoard = (() => {
     const getBoard = () => board;
 
     const updateBoard = (index, sign) => {
-        board[index] = sign;
+        if (board[index] === "") {
+            board[index] = sign;
+        }
     }
 
     return { getBoard, updateBoard };
@@ -62,8 +64,13 @@ const gameController = (() => {
     gameBoardCell.forEach((cell) => {
         cell.addEventListener("click", function () {
             updateBoard(cell.dataset.cellIndex, currentPlayer.sign);
+
+            if (cell.textContent === "") {
+                playerTurn();
+
+            }
+
             updateDisplay(cell, getBoard(), cell.dataset.cellIndex);
-            playerTurn();
             console.log(getBoard());
         });
     });
