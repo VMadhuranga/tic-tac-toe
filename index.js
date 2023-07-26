@@ -18,6 +18,7 @@ const gameBoard = (() => {
 
 const displayController = (() => {
     const gameBoardCell = document.querySelectorAll("[data-game-board-cell]");
+    const playerTurnBanner = document.querySelector("[data-player-turn-banner]");
     const { getBoard } = gameBoard;
 
     const renderToDisplay = () => {
@@ -31,27 +32,32 @@ const displayController = (() => {
         cell.textContent = gameBoard[index];
     }
 
+    const updatePlayerTurnBanner = (player) => {
+        playerTurnBanner.textContent = `${player}'s turn`;
+    }
+
     renderToDisplay();
 
-    return { updateDisplay, gameBoardCell };
+    return { updateDisplay, gameBoardCell, updatePlayerTurnBanner };
 })();
 
 const gameController = (() => {
-    const { gameBoardCell, updateDisplay } = displayController;
+    const { gameBoardCell, updateDisplay, updatePlayerTurnBanner } = displayController;
     const { getBoard, updateBoard } = gameBoard;
 
     players = [
         {
-            name: "playerX",
+            name: "Player X",
             sign: "X"
         },
         {
-            name: "playerO",
+            name: "Player O",
             sign: "O"
         }
     ];
 
     let currentPlayer = players[0];
+    updatePlayerTurnBanner(currentPlayer.name)
 
     const playerTurn = () => {
         if (currentPlayer === players[0]) {
@@ -64,13 +70,13 @@ const gameController = (() => {
     gameBoardCell.forEach((cell) => {
         cell.addEventListener("click", function () {
             updateBoard(cell.dataset.cellIndex, currentPlayer.sign);
-
+            
             if (cell.textContent === "") {
                 playerTurn();
-
             }
-
+            
             updateDisplay(cell, getBoard(), cell.dataset.cellIndex);
+            updatePlayerTurnBanner(currentPlayer.name);
             console.log(getBoard());
         });
     });
