@@ -24,12 +24,9 @@ const displayController = (() => {
             gameBoardCell[i].setAttribute("data-cell-index", getBoard().indexOf(getBoard()[i], i));
         }
     }
-    const updateDisplay = (sign) => {
-        gameBoardCell.forEach((cell) => {
-            cell.addEventListener("click", function () {
-                cell.textContent = sign;
-            });
-        });
+
+    const updateDisplay = (cell, gameBoard, index) => {
+        cell.textContent = gameBoard[index];
     }
 
     renderToDisplay();
@@ -65,6 +62,7 @@ const gameController = (() => {
     gameBoardCell.forEach((cell) => {
         cell.addEventListener("click", function () {
             updateBoard(cell.dataset.cellIndex, currentPlayer.sign);
+            updateDisplay(cell, getBoard(), cell.dataset.cellIndex);
             playerTurn();
             console.log(getBoard());
         });
