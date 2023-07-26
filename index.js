@@ -1,28 +1,73 @@
 const gameBoard = (() => {
     let board = [
-        "x","o","x",
-        "o","x","o",
-        "x","o","x"
+        "", "", "",
+        "", "", "",
+        "", "", ""
     ];
 
     const getBoard = () => board;
-    return {getBoard};
-})();
 
-const Player = (sign) => {
-    const playerSign = sign;
-}
+    const updateBoard = (index, sign) => {
+        board[index] = sign;
+    }
+
+    return { getBoard, updateBoard };
+})();
 
 const displayController = (() => {
     const gameBoardCell = document.querySelectorAll("[data-game-board-cell]");
-    const {getBoard} = gameBoard;
+    const { getBoard } = gameBoard;
 
-    const renderToPage = () => {
+    const renderToDisplay = () => {
         for (let i = 0; i < getBoard().length; i++) {
             gameBoardCell[i].textContent = getBoard()[i];
             gameBoardCell[i].setAttribute("data-cell-index", getBoard().indexOf(getBoard()[i], i));
         }
     }
+    const updateDisplay = (sign) => {
+        gameBoardCell.forEach((cell) => {
+            cell.addEventListener("click", function () {
+                cell.textContent = sign;
+            });
+        });
+    }
 
-    renderToPage();
+    renderToDisplay();
+
+    return { updateDisplay, gameBoardCell };
+})();
+
+const gameController = (() => {
+    const { gameBoardCell, updateDisplay } = displayController;
+    const { getBoard, updateBoard } = gameBoard;
+
+    players = [
+        {
+            name: "playerX",
+            sign: "X"
+        },
+        {
+            name: "playerO",
+            sign: "O"
+        }
+    ];
+
+    let currentPlayer = players[0];
+
+    const playerTurn = () => {
+        if (currentPlayer === players[0]) {
+            currentPlayer = players[1];
+        } else if (currentPlayer === players[1]) {
+            currentPlayer = players[0];
+        }
+    }
+
+    gameBoardCell.forEach((cell) => {
+        cell.addEventListener("click", function () {
+            updateBoard(cell.dataset.cellIndex, currentPlayer.sign);
+            playerTurn();
+            console.log(getBoard());
+        });
+    });
+
 })();
