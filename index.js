@@ -1,4 +1,5 @@
 const GameBoard = (() => {
+
     let board = [];
 
     const createBoard = () => {
@@ -18,6 +19,7 @@ const GameBoard = (() => {
     createBoard();
 
     return { createBoard, getBoard, updateBoard };
+
 })();
 
 const DisplayController = (() => {
@@ -47,24 +49,24 @@ const DisplayController = (() => {
 
     renderGameBoardToDisplay();
 
-    return { 
-        gameBoardCell, 
-        renderGameBoardToDisplay, 
-        updateGameBoardCell, 
-        updatePlayerTurnBanner, 
-        displayWinner 
+    return {
+        gameBoardCell,
+        renderGameBoardToDisplay,
+        updateGameBoardCell,
+        updatePlayerTurnBanner,
+        displayWinner
     };
 
 })();
 
 const GameController = (() => {
 
-    const { 
+    const {
         gameBoardCell,
-        updateGameBoardCell, 
-        updatePlayerTurnBanner, 
-        displayWinner, 
-        renderGameBoardToDisplay 
+        updateGameBoardCell,
+        updatePlayerTurnBanner,
+        displayWinner,
+        renderGameBoardToDisplay
     } = DisplayController;
 
     const { getBoard, updateBoard, createBoard } = GameBoard;
@@ -81,7 +83,8 @@ const GameController = (() => {
     ];
 
     let currentPlayer = players[0];
-    updatePlayerTurnBanner(currentPlayer.name)
+    let winner = false;
+    updatePlayerTurnBanner(currentPlayer.name);
 
     const changePlayerTurn = () => {
         if (currentPlayer === players[0]) {
@@ -102,6 +105,7 @@ const GameController = (() => {
             (gameBoard[0] === "X" && gameBoard[4] === "X" && gameBoard[8] === "X") ||
             (gameBoard[2] === "X" && gameBoard[4] === "X" && gameBoard[6] === "X")
         ) {
+            winner = true;
             displayWinner("Player X wins");
         } else if (
             (gameBoard[0] === "O" && gameBoard[1] === "O" && gameBoard[2] === "O") ||
@@ -113,8 +117,10 @@ const GameController = (() => {
             (gameBoard[0] === "O" && gameBoard[4] === "O" && gameBoard[8] === "O") ||
             (gameBoard[2] === "O" && gameBoard[4] === "O" && gameBoard[6] === "O")
         ) {
+            winner = true;
             displayWinner("Player O wins");
         } else if (gameBoard.every((item) => item)) {
+            winner = true;
             displayWinner("It's a Tie");
         }
     }
@@ -127,24 +133,34 @@ const GameController = (() => {
 
     function gameRound() {
         updateBoard(this.dataset.cellIndex, currentPlayer.sign);
-        
+
         if (this.textContent === "") {
             changePlayerTurn();
         }
-        
+
         updateGameBoardCell(this, getBoard(), this.dataset.cellIndex);
         updatePlayerTurnBanner(currentPlayer.name);
         checkWinner(getBoard());
+
+        if (winner) {
+            gameBoardCell.forEach((cell) => {
+                cell.removeEventListener("click", gameRound);
+            })
+        }
     }
 
     const restartGame = () => {
         restartButton = document.querySelector("[data-restart-button]");
-        restartButton.addEventListener("click", (e) => {
+
+        restartButton.addEventListener("click", () => {
             currentPlayer = players[0];
-            updatePlayerTurnBanner(currentPlayer.name);
+            winner = false;
+
             createBoard();
             renderGameBoardToDisplay();
-        })
+            updatePlayerTurnBanner(currentPlayer.name);
+            playGame();
+        });
     }
 
     restartGame();

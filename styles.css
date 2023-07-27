@@ -35,6 +35,7 @@ body {
     
     & .game-board-cell {
         font-size: 3rem;
+        font-weight: bold;
         border: 1px solid black;
         display: flex;
         justify-content: center;
