@@ -1,4 +1,4 @@
-const gameBoard = (() => {
+const GameBoard = (() => {
     let board = [];
 
     const createBoard = () => {
@@ -20,20 +20,20 @@ const gameBoard = (() => {
     return { createBoard, getBoard, updateBoard };
 })();
 
-const displayController = (() => {
+const DisplayController = (() => {
 
     const gameBoardCell = document.querySelectorAll("[data-game-board-cell]");
     const playerTurnBanner = document.querySelector("[data-player-turn-banner]");
-    const { getBoard } = gameBoard;
+    const { getBoard } = GameBoard;
 
-    const renderToDisplay = () => {
+    const renderGameBoardToDisplay = () => {
         for (let i = 0; i < getBoard().length; i++) {
             gameBoardCell[i].textContent = getBoard()[i];
             gameBoardCell[i].setAttribute("data-cell-index", getBoard().indexOf(getBoard()[i], i));
         }
     }
 
-    const updateDisplay = (cell, gameBoard, index) => {
+    const updateGameBoardCell = (cell, gameBoard, index) => {
         cell.textContent = gameBoard[index];
     }
 
@@ -45,29 +45,29 @@ const displayController = (() => {
         playerTurnBanner.textContent = winner;
     }
 
-    renderToDisplay();
+    renderGameBoardToDisplay();
 
     return { 
         gameBoardCell, 
-        renderToDisplay, 
-        updateDisplay, 
+        renderGameBoardToDisplay, 
+        updateGameBoardCell, 
         updatePlayerTurnBanner, 
         displayWinner 
     };
 
 })();
 
-const gameController = (() => {
+const GameController = (() => {
 
     const { 
         gameBoardCell,
-        updateDisplay, 
+        updateGameBoardCell, 
         updatePlayerTurnBanner, 
         displayWinner, 
-        renderToDisplay 
-    } = displayController;
+        renderGameBoardToDisplay 
+    } = DisplayController;
 
-    const { getBoard, updateBoard, createBoard } = gameBoard;
+    const { getBoard, updateBoard, createBoard } = GameBoard;
 
     const players = [
         {
@@ -83,7 +83,7 @@ const gameController = (() => {
     let currentPlayer = players[0];
     updatePlayerTurnBanner(currentPlayer.name)
 
-    const playerTurn = () => {
+    const changePlayerTurn = () => {
         if (currentPlayer === players[0]) {
             currentPlayer = players[1];
         } else if (currentPlayer === players[1]) {
@@ -129,10 +129,10 @@ const gameController = (() => {
         updateBoard(this.dataset.cellIndex, currentPlayer.sign);
         
         if (this.textContent === "") {
-            playerTurn();
+            changePlayerTurn();
         }
         
-        updateDisplay(this, getBoard(), this.dataset.cellIndex);
+        updateGameBoardCell(this, getBoard(), this.dataset.cellIndex);
         updatePlayerTurnBanner(currentPlayer.name);
         checkWinner(getBoard());
     }
@@ -143,11 +143,11 @@ const gameController = (() => {
             currentPlayer = players[0];
             updatePlayerTurnBanner(currentPlayer.name);
             createBoard();
-            renderToDisplay();
+            renderGameBoardToDisplay();
         })
     }
 
     restartGame();
     playGame();
-    
+
 })();
