@@ -1,9 +1,11 @@
 const gameBoard = (() => {
-    let board = [
-        "", "", "",
-        "", "", "",
-        "", "", ""
-    ];
+    let board = [];
+
+    const createBoard = () => {
+        for (let i = 0; i < 9; i++) {
+            board[i] = "";
+        }
+    }
 
     const getBoard = () => board;
 
@@ -13,10 +15,13 @@ const gameBoard = (() => {
         }
     }
 
-    return { getBoard, updateBoard };
+    createBoard();
+
+    return { createBoard, getBoard, updateBoard };
 })();
 
 const displayController = (() => {
+
     const gameBoardCell = document.querySelectorAll("[data-game-board-cell]");
     const playerTurnBanner = document.querySelector("[data-player-turn-banner]");
     const { getBoard } = gameBoard;
@@ -42,12 +47,27 @@ const displayController = (() => {
 
     renderToDisplay();
 
-    return { updateDisplay, gameBoardCell, updatePlayerTurnBanner, displayWinner };
+    return { 
+        gameBoardCell, 
+        renderToDisplay, 
+        updateDisplay, 
+        updatePlayerTurnBanner, 
+        displayWinner 
+    };
+
 })();
 
 const gameController = (() => {
-    const { gameBoardCell, updateDisplay, updatePlayerTurnBanner, displayWinner } = displayController;
-    const { getBoard, updateBoard } = gameBoard;
+
+    const { 
+        gameBoardCell,
+        updateDisplay, 
+        updatePlayerTurnBanner, 
+        displayWinner, 
+        renderToDisplay 
+    } = displayController;
+
+    const { getBoard, updateBoard, createBoard } = gameBoard;
 
     const players = [
         {
@@ -117,5 +137,17 @@ const gameController = (() => {
         checkWinner(getBoard());
     }
 
+    const restartGame = () => {
+        restartButton = document.querySelector("[data-restart-button]");
+        restartButton.addEventListener("click", (e) => {
+            currentPlayer = players[0];
+            updatePlayerTurnBanner(currentPlayer.name);
+            createBoard();
+            renderToDisplay();
+        })
+    }
+
+    restartGame();
     playGame();
+    
 })();
