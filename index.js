@@ -36,16 +36,20 @@ const displayController = (() => {
         playerTurnBanner.textContent = `${player}'s turn`;
     }
 
+    const displayWinner = (winner) => {
+        playerTurnBanner.textContent = winner;
+    }
+
     renderToDisplay();
 
-    return { updateDisplay, gameBoardCell, updatePlayerTurnBanner };
+    return { updateDisplay, gameBoardCell, updatePlayerTurnBanner, displayWinner };
 })();
 
 const gameController = (() => {
-    const { gameBoardCell, updateDisplay, updatePlayerTurnBanner } = displayController;
+    const { gameBoardCell, updateDisplay, updatePlayerTurnBanner, displayWinner } = displayController;
     const { getBoard, updateBoard } = gameBoard;
 
-    players = [
+    const players = [
         {
             name: "Player X",
             sign: "X"
@@ -67,18 +71,51 @@ const gameController = (() => {
         }
     }
 
-    gameBoardCell.forEach((cell) => {
-        cell.addEventListener("click", function () {
-            updateBoard(cell.dataset.cellIndex, currentPlayer.sign);
-            
-            if (cell.textContent === "") {
-                playerTurn();
-            }
-            
-            updateDisplay(cell, getBoard(), cell.dataset.cellIndex);
-            updatePlayerTurnBanner(currentPlayer.name);
-            console.log(getBoard());
-        });
-    });
+    const checkWinner = (gameBoard) => {
+        if (
+            (gameBoard[0] === "X" && gameBoard[1] === "X" && gameBoard[2] === "X") ||
+            (gameBoard[3] === "X" && gameBoard[4] === "X" && gameBoard[5] === "X") ||
+            (gameBoard[6] === "X" && gameBoard[7] === "X" && gameBoard[8] === "X") ||
+            (gameBoard[0] === "X" && gameBoard[3] === "X" && gameBoard[6] === "X") ||
+            (gameBoard[1] === "X" && gameBoard[4] === "X" && gameBoard[7] === "X") ||
+            (gameBoard[2] === "X" && gameBoard[5] === "X" && gameBoard[8] === "X") ||
+            (gameBoard[0] === "X" && gameBoard[4] === "X" && gameBoard[8] === "X") ||
+            (gameBoard[2] === "X" && gameBoard[4] === "X" && gameBoard[6] === "X")
+        ) {
+            displayWinner("Player X wins");
+        } else if (
+            (gameBoard[0] === "O" && gameBoard[1] === "O" && gameBoard[2] === "O") ||
+            (gameBoard[3] === "O" && gameBoard[4] === "O" && gameBoard[5] === "O") ||
+            (gameBoard[6] === "O" && gameBoard[7] === "O" && gameBoard[8] === "O") ||
+            (gameBoard[0] === "O" && gameBoard[3] === "O" && gameBoard[6] === "O") ||
+            (gameBoard[1] === "O" && gameBoard[4] === "O" && gameBoard[7] === "O") ||
+            (gameBoard[2] === "O" && gameBoard[5] === "O" && gameBoard[8] === "O") ||
+            (gameBoard[0] === "O" && gameBoard[4] === "O" && gameBoard[8] === "O") ||
+            (gameBoard[2] === "O" && gameBoard[4] === "O" && gameBoard[6] === "O")
+        ) {
+            displayWinner("Player O wins");
+        } else if (gameBoard.every((item) => item)) {
+            displayWinner("It's a Tie");
+        }
+    }
 
+    const playGame = () => {
+        gameBoardCell.forEach((cell) => {
+            cell.addEventListener("click", gameRound);
+        });
+    }
+
+    function gameRound() {
+        updateBoard(this.dataset.cellIndex, currentPlayer.sign);
+        
+        if (this.textContent === "") {
+            playerTurn();
+        }
+        
+        updateDisplay(this, getBoard(), this.dataset.cellIndex);
+        updatePlayerTurnBanner(currentPlayer.name);
+        checkWinner(getBoard());
+    }
+
+    playGame();
 })();
